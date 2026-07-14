@@ -272,6 +272,27 @@
       }
     }
 
+  
+    .signal-2k {
+      color: #81f4b7;
+      font-weight: 800;
+    }
+
+    .signal-4k {
+      color: #8ecaff;
+      font-weight: 800;
+    }
+
+    .signal-dual {
+      color: #ffb86b;
+      font-weight: 800;
+    }
+
+    .signal-above {
+      color: #ff4d8d;
+      font-weight: 800;
+    }
+
   </style>
 </head>
 <body>
@@ -315,6 +336,7 @@
           <th>Width</th>
           <th>Height</th>
           <th>Pixel Count</th>
+          <th>Signal Type</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -332,6 +354,69 @@ function gcd(a, b) {
     a = t;
   }
   return a;
+}
+
+
+
+
+function getSignalType(w, h) {
+  const pixels = w * h;
+
+  const limits = {
+    twoK: {
+      maxWidth: 1920,
+      maxHeight: 1200,
+      maxPixels: 1920 * 1200
+    },
+    dualLink: {
+      maxWidth: 3840,
+      maxHeight: 1080,
+      maxPixels: 3840 * 1080
+    },
+    fourK: {
+      maxWidth: 8192,
+      maxHeight: 2160,
+      maxPixels: 3840 * 2160
+    }
+  };
+
+  if (
+    w <= limits.twoK.maxWidth &&
+    h <= limits.twoK.maxHeight &&
+    pixels <= limits.twoK.maxPixels
+  ) {
+    return {
+      label: "2K",
+      className: "signal-2k"
+    };
+  }
+
+  if (
+    w <= limits.dualLink.maxWidth &&
+    h <= limits.dualLink.maxHeight &&
+    pixels <= limits.dualLink.maxPixels
+  ) {
+    return {
+      label: "DL",
+      className: "signal-dual"
+    };
+  }
+
+  if (
+    w <= limits.fourK.maxWidth &&
+    h <= limits.fourK.maxHeight &&
+    pixels <= limits.fourK.maxPixels
+  ) {
+    return {
+      label: "4K",
+      className: "signal-4k"
+    };
+  }
+
+  return {
+    label: "Above 4K",
+    className: "signal-above"
+  };
 }
 
 function calculate() {
@@ -413,6 +498,7 @@ function calculate() {
       if (mode === "up" && v.changePercent <= 0) return;
 
       const tr = document.createElement("tr");
+      const signalType = getSignalType(v.w, v.h);
 
       let scaleClass = "";
       if (v.changePercent < 0) scaleClass = "down";
@@ -424,6 +510,7 @@ function calculate() {
         <td>${v.w}</td>
         <td>${v.h}</td>
         <td>${v.pixels.toLocaleString()}</td>
+        <td><span class="${signalType.className}">${signalType.label}</span></td>
         <td>${v.withinMax ? '<span class="good">Within max width</span>' : 'Over max width'}</td>
       `;
 
